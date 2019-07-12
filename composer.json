@@ -1,0 +1,20 @@
+{
+    "name": "phphleb/radjax",
+    "description": "Ajax router for Micro-Framework HLEB",
+    "type": "library",
+    "keywords": [
+      "router",
+      "ajax"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Foma Tuturov",
+            "email": "fomiash@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": "^7.0.0",
+        "phphleb/framework": "^1.2.0"
+    }
+}
