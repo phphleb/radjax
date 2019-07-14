@@ -14,6 +14,6 @@ Radjax\Route::get("/info/", ["get"], "App\Controllers\TestController@index", ["p
 
 // and advanced customization
 
-Radjax\Route::get("/weather/{year}/{month}/{day}/{hour?}/", ["get","post"], "App\Controllers\TestController@weather", ["protected"=>true, "autoloader" => false, "where"=>["hour"=>"[a-z]+"], "session_saved" => false]);
+Radjax\Route::get("/weather/{y}/{m}/{d}/{h?}/", ["get","post"], "App\Controllers\TestController@weather", ["protected"=>true, "where"=>["y"=>"[0-9]+", "m"=>"[0-9]+", "d"=>"[0-9]+", "h"=>"[0-9]+"], "session_saved" => false]);
 
 ```

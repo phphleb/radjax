@@ -58,7 +58,7 @@ class Route
 
         $sort_params["arguments"] = $params["arguments"] ?? [];
 
-        $sort_params["autoloader"] = $params["autoloader"] ?? false;
+        $sort_params["autoloader"] = $params["autoloader"] ?? true;
 
         $sort_params["save_session"] = $params["save_session"] ?? false;
 
