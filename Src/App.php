@@ -38,7 +38,7 @@ class App
     {
         $this->data = [];
 
-       if($data["route"] === $this->uri || $this->params_in_uri($data["route"])){
+       if($data["route"] === $this->uri || $this->params_in_uri($data["route"], $data['where'])){
 
            // Роут найден
 
@@ -156,7 +156,7 @@ class App
         return ($_REQUEST['_token'] ?? "") === Route::key();
     }
 
-    protected function params_in_uri($route)
+    protected function params_in_uri($route, $where)
     {
 
         if ((strpos($route, "}") !== false && strpos($route, "}") !== false ) || strpos($route, "?") !== false) {
@@ -171,11 +171,23 @@ class App
 
             foreach ($parts as $key => $part) {
 
-                if ($part{0} == "{" && $part{strlen($part) - 1} == "}") {
+                $pattern_name = trim($part, "{?}");
 
-                    $this->data[trim($part, "{?}")] = $uri[$key] ?? null;
+                if (isset($uri[$key]) && $part{0} == "{" && $part{strlen($part) - 1} == "}") {
 
-                } else if (!(($key === count($parts) - 1 && !isset($uri[$key])) || trim($part, "?") === $uri[$key])) {
+                    if(count($where) && array_key_exists($pattern_name,$where)){
+
+                        preg_match("/^" . $where[$pattern_name] . "$/", $uri[$key], $matches);
+
+                        if (empty($matches[0]) || $matches[0] != $uri[$key]) {
+
+                            return false;
+                        }
+                    }
+
+                    $this->data[$pattern_name] = $uri[$key];
+
+                } else if (!(($key === count($parts) - 1 && !isset($uri[$key])) || $pattern_name === $uri[$key])) {
 
                     return false;
                 }

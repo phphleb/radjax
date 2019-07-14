@@ -40,7 +40,7 @@ class Route
        $controller = "App\Controllers\TestController@index",
        $params = [
          "protected" => false,
-         "format" => "json",
+         "where" => ["number" => "[0-9]+"],
          "arguments" => ["value1", "value2"],
          "autoloader" => false,
          "save_session" => false
@@ -53,6 +53,8 @@ class Route
         $sort_params = [];
 
         $sort_params["protected"] = $params["protected"] ?? false;
+
+        $sort_params["where"] = $params["where"] ?? [];
 
         $sort_params["arguments"] = $params["arguments"] ?? [];
 

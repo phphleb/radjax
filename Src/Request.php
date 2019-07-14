@@ -34,12 +34,16 @@ class Request
 
     public static function add(string $name, string $value)
     {
-        if(!self::$close) self::$request[$name] = $value;
+        if(!self::$close) self::$request[$name] = is_numeric($value) ? floatval($value) : $value;
     }
 
     public static function addAll(array $data)
     {
-        if(!self::$close) self::$request = $data;
+        if(!self::$close){
+            foreach($data as $name => $value) {
+                self::add($name, $value);
+            }
+        }
 
         self::close();
     }
