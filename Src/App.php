@@ -30,7 +30,7 @@ class App
 
         // Нахождение подходящего роута
         foreach ($this->params as $route_data) {
-           $this->search_actual_route($route_data);
+            $this->search_actual_route($route_data);
         }
     }
 
@@ -38,101 +38,103 @@ class App
     {
         $this->data = [];
 
-       if($data["route"] === $this->uri || $this->params_in_uri($data["route"], $data['where'])){
+        if($data["route"] === $this->uri || $this->params_in_uri($data["route"], $data['where'])){
 
-           // Роут найден
+            // Роут найден
 
-           if($data["protected"] && !$this->is_protected()){
+            if($data["protected"] && !$this->is_protected()){
 
-               header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
-               die("Protected from CSRF");
+                header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
+                die("Protected from CSRF");
 
-           }
+            }
 
-           $data["type"][] = "OPTIONS";
+            $data["type"][] = "OPTIONS";
 
-           if($data["add_headers"]) {
+            if($data["add_headers"]) {
 
-               if (strtoupper($_SERVER['REQUEST_METHOD']) == "OPTIONS") {
+                if (strtoupper($_SERVER['REQUEST_METHOD']) == "OPTIONS") {
 
-                   if (!headers_sent()) {
-                       header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
-                       header("Allow: " . implode(",", array_unique($data["type"])));
-                       header("Content-length: 0");
-                   }
-                   exit();
-               }
+                    if (!headers_sent()) {
+                        header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+                        header("Allow: " . implode(",", array_unique($data["type"])));
+                        header("Content-length: 0");
+                    }
+                    exit();
+                }
 
-               if (!in_array(strtoupper($_SERVER['REQUEST_METHOD']), $data["type"]) ||
-                   !in_array(strtoupper($_SERVER['REQUEST_METHOD']), Route::ALL_TYPES)) {
+                if (!in_array(strtoupper($_SERVER['REQUEST_METHOD']), $data["type"]) ||
+                    !in_array(strtoupper($_SERVER['REQUEST_METHOD']), Route::ALL_TYPES)) {
 
-                   if (!headers_sent()) {
-                       header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
-                       header("Allow: " . implode(",", array_unique($data["type"])));
-                       header("Content-length: 0");
-                   }
-                   exit();
-               }
-           }
+                    if (!headers_sent()) {
+                        header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
+                        header("Allow: " . implode(",", array_unique($data["type"])));
+                        header("Content-length: 0");
+                    }
+                    exit();
+                }
+            }
 
-           if(!isset($_SESSION)) session_start();
-           if(!$data["save_session"]) session_write_close();
-
-
-           define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
-
-           define('HLEB_VENDOR_DIRECTORY', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
-
-           define("HLEB_PROJECT_DIRECTORY", HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
-
-           if ($data["autoloader"] && file_exists(HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
-               require_once (HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');          }
+            if(!isset($_SESSION)) session_start();
+            if(!$data["save_session"]) session_write_close();
 
 
+            define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
 
-           ////////////////////////////////////////////// HLEB /////////////////////////////////////////////////////////
+            define('HLEB_VENDOR_DIRECTORY', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
 
-           if(is_dir(HLEB_GLOBAL_DIRECTORY . "/app/Optional/") && is_dir(HLEB_PROJECT_DIRECTORY . "/Main/")) {
+            define("HLEB_PROJECT_DIRECTORY", HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
 
-               require_once "DeterminantStaticUncreated.php";
-
-               require HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
-
-               require HLEB_GLOBAL_DIRECTORY . "/app/Optional/MainConnector.php";
-
-               require HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
-
-               require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
-
-               require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
-
-               require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
-
-               require HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
+            if ($data["autoloader"] && file_exists(HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
+                require_once (HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');          }
 
 
-               if(function_exists('radjax_main_autoloader')) {
-                   spl_autoload_register('radjax_main_autoloader', true, true);
-               }
-           }
 
-           /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////// HLEB /////////////////////////////////////////////////////////
 
-           if(count($data["before"])) $this->get_before($data);
+            if(is_dir(HLEB_GLOBAL_DIRECTORY . "/app/Optional/") && is_dir(HLEB_PROJECT_DIRECTORY . "/Main/")) {
 
-           $result = $this->get_controller($data);
+                require_once "DeterminantStaticUncreated.php";
 
-           if(!is_string($result) && !is_numeric($result)) {
-               error_log("Radjax/App: The controller " . $data["controller"] . " returned an invalid value format. ");
-           }
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
 
-           print $result;
+                require HLEB_GLOBAL_DIRECTORY  . "/app/Optional/MainConnector.php";
 
-           exit();
+                require HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
 
-       }
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Commands/MainTask.php";
 
-       // Подходящего роута не найдено
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
+
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
+
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
+
+                require HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
+
+
+                if(function_exists('radjax_main_autoloader')) {
+                    spl_autoload_register('radjax_main_autoloader', true, true);
+                }
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            if(count($data["before"])) $this->get_before($data);
+
+            $result = $this->get_controller($data);
+
+            if(!is_string($result) && !is_numeric($result)) {
+                error_log("Radjax/App: The controller " . $data["controller"] . " returned an invalid value format. ");
+            }
+
+            print $result;
+
+            exit();
+
+        }
+
+        // Подходящего роута не найдено
 
         $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $this->create_debug_info($data);
 
@@ -153,7 +155,7 @@ class App
             $method = ($call[1] ?? "index") .
                 (method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])));
 
-           $controller->{$method}();
+            $controller->{$method}();
         }
 
     }
@@ -216,9 +218,9 @@ class App
                 }
             }
             // Проверки прошли успешно
-              require_once "Request.php";
+            require_once "Request.php";
 
-              Request::addAll($this->data);
+            Request::addAll($this->data);
 
             return true;
         }

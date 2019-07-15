@@ -65,7 +65,7 @@ class Route
 
         $sort_params["save_session"] = $params["save_session"] ?? false;
 
-        $sort_params["before"] = isset($params["before"]) ? ( is_array($params["before"]  ? $params["before"] : [$params["before"]]) ) : [] ;
+        $sort_params["before"] = isset($params["before"]) ? ( is_array($params["before"])  ? $params["before"] : [$params["before"]]) : [] ;
 
         $sort_params["add_headers"] = $params["add_headers"] ?? true;
 
