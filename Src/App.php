@@ -51,32 +51,33 @@ class App
 
            $data["type"][] = "OPTIONS";
 
-           if(strtoupper($_SERVER['REQUEST_METHOD']) == "OPTIONS"){
+           if($data["add_headers"]) {
 
-               if (!headers_sent()) {
-                   header($_SERVER["SERVER_PROTOCOL"]." 200 OK");
-                   header("Allow: " . implode(",",array_unique($data["type"])));
-                   header("Content-length: 0");
+               if (strtoupper($_SERVER['REQUEST_METHOD']) == "OPTIONS") {
+
+                   if (!headers_sent()) {
+                       header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+                       header("Allow: " . implode(",", array_unique($data["type"])));
+                       header("Content-length: 0");
+                   }
+                   exit();
                }
-               exit();
-           }
 
-           if(!in_array(strtoupper($_SERVER['REQUEST_METHOD']), $data["type"]) ||
-               !in_array(strtoupper($_SERVER['REQUEST_METHOD']), Route::ALL_TYPES)){
+               if (!in_array(strtoupper($_SERVER['REQUEST_METHOD']), $data["type"]) ||
+                   !in_array(strtoupper($_SERVER['REQUEST_METHOD']), Route::ALL_TYPES)) {
 
-               if (!headers_sent()) {
-                   header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed");
-                   header("Allow: " . implode(",",array_unique($data["type"])));
-                   header("Content-length: 0");
+                   if (!headers_sent()) {
+                       header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
+                       header("Allow: " . implode(",", array_unique($data["type"])));
+                       header("Content-length: 0");
+                   }
+                   exit();
                }
-               exit();
            }
 
            if(!isset($_SESSION)) session_start();
            if(!$data["save_session"]) session_write_close();
 
-
-           $hl_tests_path = explode(DIRECTORY_SEPARATOR, __DIR__);
 
            define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
 
@@ -89,7 +90,7 @@ class App
 
 
 
-           /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+           ////////////////////////////////////////////// HLEB /////////////////////////////////////////////////////////
 
            if(is_dir(HLEB_GLOBAL_DIRECTORY . "/app/Optional/") && is_dir(HLEB_PROJECT_DIRECTORY . "/Main/")) {
 
@@ -117,6 +118,8 @@ class App
 
            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+           if(count($data["before"])) $this->get_before($data);
+
            $result = $this->get_controller($data);
 
            if(!is_string($result) && !is_numeric($result)) {
@@ -132,6 +135,26 @@ class App
        // Подходящего роута не найдено
 
         $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $this->create_debug_info($data);
+
+    }
+
+    private function get_before(array $param)
+    {
+        $before_conrollers = $param["before"];
+
+        foreach($before_conrollers as $before) {
+
+            $call = explode("@", $before);
+
+            $initiator = trim($call[0], "\\");
+
+            $controller = new $initiator();
+
+            $method = ($call[1] ?? "index") .
+                (method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])));
+
+           $controller->{$method}();
+        }
 
     }
 
@@ -193,7 +216,8 @@ class App
                 }
             }
             // Проверки прошли успешно
-              require_once dirname(__FILE__, 4) . "/phphleb/radjax/Src/Request.php";
+              require_once "Request.php";
+
               Request::addAll($this->data);
 
             return true;
