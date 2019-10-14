@@ -42,13 +42,6 @@ class App
 
             // Роут найден
 
-            if($data["protected"] && !$this->is_protected()){
-
-                header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
-                die("Protected from CSRF");
-
-            }
-
             $data["type"][] = "OPTIONS";
 
             if($data["add_headers"]) {
@@ -76,6 +69,12 @@ class App
             }
 
             if(!isset($_SESSION)) session_start();
+            if($data["protected"] && !$this->is_protected()){
+
+                header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
+                die("Protected from CSRF");
+
+            }
             if(!$data["save_session"]) session_write_close();
 
 

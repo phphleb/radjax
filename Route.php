@@ -81,14 +81,7 @@ class Route
 
     public static function key()
     {
-        $session_id = 0;
-        if(!isset($_SESSION)){
-            session_start();
-            $session_id = session_id();
-            session_write_close();
-        }
-
-        return md5($session_id . ($_SESSION['_SECURITY_TOKEN'] ?? 0));
+        return md5(session_id() . ($_SESSION['_SECURITY_TOKEN'] ?? 0));
     }
 
 
