@@ -93,23 +93,23 @@ class App
 
             if(is_dir(HLEB_GLOBAL_DIRECTORY . "/app/Optional/") && is_dir(HLEB_PROJECT_DIRECTORY . "/Main/")) {
 
-                require_once "DeterminantStaticUncreated.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Main/Insert/DeterminantStaticUncreated.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
 
-                require HLEB_GLOBAL_DIRECTORY  . "/app/Optional/MainConnector.php";
+                require_once HLEB_GLOBAL_DIRECTORY  . "/app/Optional/MainConnector.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Commands/MainTask.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Commands/MainTask.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
+                require_once HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
 
 
                 if(function_exists('radjax_main_autoloader')) {
