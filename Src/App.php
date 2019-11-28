@@ -77,17 +77,31 @@ class App
             }
             if(!$data["save_session"]) session_write_close();
 
+            if(is_dir(dirname(__FILE__, 5) . "/app/Optional/")) {
+                if(file_exists(dirname(__FILE__, 5). "/start.hleb.php")){
+                    require_once dirname(__FILE__, 5). "/start.hleb.php";
+                    } else if(file_exists(dirname(__FILE__, 5). "/default.start.hleb.php")){
+                    require_once dirname(__FILE__, 5). "default.start.hleb.php";
+                }
+            }
 
-            define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
+            if (defined("HLEB_PROJECT_LOG_ON") && HLEB_PROJECT_LOG_ON) {
 
-            define('HLEB_VENDOR_DIR_NAME', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
+                ini_set('log_errors', 'On');
 
-            define('HLEB_VENDOR_DIRECTORY', HLEB_GLOBAL_DIRECTORY . DIRECTORY_SEPARATOR . HLEB_VENDOR_DIR_NAME);
+                ini_set('error_log', HLEB_GLOBAL_DIRECTORY . '/storage/logs/' . date("Y_m_d_") . 'errors.log');
+            }
 
-            define("HLEB_PROJECT_DIRECTORY", HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
+            if(!defined('HLEB_GLOBAL_DIRECTORY')) define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
+
+            if(!defined('HLEB_VENDOR_DIR_NAME')) define('HLEB_VENDOR_DIR_NAME', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
+
+            if(!defined('HLEB_VENDOR_DIRECTORY')) define('HLEB_VENDOR_DIRECTORY', HLEB_GLOBAL_DIRECTORY . DIRECTORY_SEPARATOR . HLEB_VENDOR_DIR_NAME);
+
+            if(!defined('HLEB_PROJECT_DIRECTORY')) define("HLEB_PROJECT_DIRECTORY", HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
 
             if ($data["autoloader"] && file_exists(HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
-                require_once (HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');          }
+                require_once (HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');           }
 
 
 
