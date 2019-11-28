@@ -80,12 +80,14 @@ class App
 
             define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
 
-            define('HLEB_VENDOR_DIRECTORY', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
+            define('HLEB_VENDOR_DIR_NAME', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
 
-            define("HLEB_PROJECT_DIRECTORY", HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
+            define('HLEB_VENDOR_DIRECTORY', HLEB_GLOBAL_DIRECTORY . DIRECTORY_SEPARATOR . HLEB_VENDOR_DIR_NAME);
 
-            if ($data["autoloader"] && file_exists(HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
-                require_once (HLEB_GLOBAL_DIRECTORY . "/" . HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');          }
+            define("HLEB_PROJECT_DIRECTORY", HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
+
+            if ($data["autoloader"] && file_exists(HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
+                require_once (HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');          }
 
 
 
