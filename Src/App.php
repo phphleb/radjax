@@ -76,7 +76,7 @@ class App
             }
             if(!$data["save_session"]) session_write_close();
 
-            if(is_dir(dirname(__FILE__, 5) . "/app/Optional/")) {
+            if(defined("HLEB_FRAME_VERSION")) {
                 if(file_exists(dirname(__FILE__, 5). "/start.hleb.php")){
                     require_once dirname(__FILE__, 5). "/start.hleb.php";
                     } else if(file_exists(dirname(__FILE__, 5). "/default.start.hleb.php")){
@@ -106,7 +106,7 @@ class App
 
             ////////////////////////////////////////////// HLEB /////////////////////////////////////////////////////////
 
-            if(is_dir(HLEB_GLOBAL_DIRECTORY . "/app/Optional/") && is_dir(HLEB_PROJECT_DIRECTORY . "/Main/")) {
+            if(defined("HLEB_FRAME_VERSION")) {
 
                 require_once HLEB_PROJECT_DIRECTORY . "/Main/Insert/DeterminantStaticUncreated.php";
 
@@ -127,9 +127,10 @@ class App
                 require_once HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
 
 
-                if(function_exists('radjax_main_autoloader')) {
+                 if (HLEB_PROJECT_CLASSES_AUTOLOAD && function_exists('radjax_main_autoloader')) {
                     spl_autoload_register('radjax_main_autoloader', true, true);
-                }
+                 }
+
                 if($this->data) {
                     foreach ($this->data as $key => $value) {
                         \Hleb\Constructor\Handlers\Request::add($key, $value);
@@ -143,8 +144,8 @@ class App
 
             $result = $this->get_controller($data);
 
-            if(!is_string($result) && !is_numeric($result)) {
-                error_log("Radjax/App: The controller " . $data["controller"] . " returned an invalid value format. ");
+            if(!is_string($result) && !is_numeric($result)  && !is_null($result)) {
+                error_log("Radjax/App: The controller " . $data["controller"] . " returned an invalid value format.  [" . gettype($result) . "]");
             }
 
             print $result;
