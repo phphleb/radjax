@@ -144,11 +144,9 @@ class App
 
             $result = $this->get_controller($data);
 
-            if(!is_string($result) && !is_numeric($result)  && !is_null($result)) {
-                error_log("Radjax/App: The controller " . $data["controller"] . " returned an invalid value format.  [" . gettype($result) . "]");
+            if(is_string($result) || is_numeric($result)) {
+                print $result;
             }
-
-            print $result;
 
             exit();
 
