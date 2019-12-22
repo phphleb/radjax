@@ -49,7 +49,7 @@ class Route
 
      ] */
 
-    static function get(string $route, array $type , string $controller, array $params)
+    public static function get(string $route, array $type , string $controller, array $params)
     {
         $type = count($type) ? array_map("strtoupper", $type) :  self::STANDARD_TYPES;
 
@@ -74,7 +74,7 @@ class Route
         self::$params[] = array_merge (["route"=>$route, "type"=>$type, "controller"=>$controller], $sort_params);
     }
 
-    static function getParams() : array
+    public static function getParams() : array
     {
         return self::$params;
     }

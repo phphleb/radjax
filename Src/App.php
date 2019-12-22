@@ -76,14 +76,6 @@ class App
             }
             if(!$data["save_session"]) session_write_close();
 
-            if(defined("HLEB_FRAME_VERSION")) {
-                if(file_exists(dirname(__FILE__, 5). "/start.hleb.php")){
-                    require_once dirname(__FILE__, 5). "/start.hleb.php";
-                    } else if(file_exists(dirname(__FILE__, 5). "/default.start.hleb.php")){
-                    require_once dirname(__FILE__, 5). "default.start.hleb.php";
-                }
-            }
-
             if (defined("HLEB_PROJECT_LOG_ON") && HLEB_PROJECT_LOG_ON) {
 
                 ini_set('log_errors', 'On');
@@ -108,23 +100,29 @@ class App
 
             if(defined("HLEB_FRAME_VERSION")) {
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Main/Insert/DeterminantStaticUncreated.php";
+                require HLEB_PROJECT_DIRECTORY . "/Main/Insert/DeterminantStaticUncreated.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
 
-                require_once HLEB_GLOBAL_DIRECTORY  . "/app/Optional/MainConnector.php";
+                require HLEB_GLOBAL_DIRECTORY  . "/app/Optional/MainConnector.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
+                require HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Commands/MainTask.php";
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Commands/MainTask.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
+                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
 
-                require_once HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
+                require HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
+
+                require HLEB_PROJECT_DIRECTORY . '/Constructor/Handlers/Request.php';
+
+                require HLEB_PROJECT_DIRECTORY . '/Constructor/VCreator.php';
+
+                require HLEB_PROJECT_DIRECTORY . '/Constructor/Routes/Data.php';
 
 
                  if (HLEB_PROJECT_CLASSES_AUTOLOAD && function_exists('radjax_main_autoloader')) {
@@ -154,7 +152,7 @@ class App
 
         // Подходящего роута не найдено
 
-        $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $this->create_debug_info($data);
+        if(defined("HLEB_FRAME_VERSION")) $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $this->create_debug_info($data);
 
     }
 
@@ -235,10 +233,13 @@ class App
                     return false;
                 }
             }
-            // Проверки прошли успешно
-            require_once "Request.php";
 
-            Request::addAll($this->data);
+            if(!defined("HLEB_FRAME_VERSION")) {
+                // Проверки прошли успешно
+                require "Request.php";
+
+                Request::addAll($this->data);
+            }
 
             return true;
         }
