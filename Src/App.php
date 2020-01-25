@@ -108,11 +108,7 @@ class App
 
                 require HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
 
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Commands/MainTask.php";
-
                 require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
-
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Middleware/MainMiddleware.php";
 
                 require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
 
