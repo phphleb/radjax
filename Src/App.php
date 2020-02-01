@@ -12,13 +12,15 @@ class App
 
     protected $uri;
 
-    protected $secret_key;
-
     protected $data = [];
 
-    function __construct(array $all_params) // insert Route::getParams();
+    function __construct(array $routes_files_path)
     {
-        $this->params = $all_params;
+        foreach($routes_files_path as $route){
+            (new RCreator($route))->view();
+        }
+
+        $this->params = Route::getParams();
 
         $this->uri = trim(explode("?", $_SERVER['REQUEST_URI'])[0] , "/");
     }
@@ -92,34 +94,12 @@ class App
             if(!defined('HLEB_PROJECT_DIRECTORY')) define("HLEB_PROJECT_DIRECTORY", HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
 
             if ($data["autoloader"] && file_exists(HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
-                require_once (HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');           }
-
-
+                require_once (HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');
+            }
 
             ////////////////////////////////////////////// HLEB /////////////////////////////////////////////////////////
 
             if(defined("HLEB_FRAME_VERSION")) {
-
-                require HLEB_PROJECT_DIRECTORY . "/Main/Insert/DeterminantStaticUncreated.php";
-
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/Home/Main/Connector.php";
-
-                require HLEB_GLOBAL_DIRECTORY  . "/app/Optional/MainConnector.php";
-
-                require HLEB_PROJECT_DIRECTORY . "/Main/HomeConnector.php";
-
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Controllers/MainController.php";
-
-                require HLEB_PROJECT_DIRECTORY . "/Scheme/App/Models/MainModel.php";
-
-                require HLEB_PROJECT_DIRECTORY . "/Main/MainAutoloader.php";
-
-                require HLEB_PROJECT_DIRECTORY . '/Constructor/Handlers/Request.php';
-
-                require HLEB_PROJECT_DIRECTORY . '/Constructor/VCreator.php';
-
-                require HLEB_PROJECT_DIRECTORY . '/Constructor/Routes/Data.php';
-
 
                  if (HLEB_PROJECT_CLASSES_AUTOLOAD && function_exists('radjax_main_autoloader')) {
                     spl_autoload_register('radjax_main_autoloader', true, true);
@@ -148,7 +128,7 @@ class App
 
         // Подходящего роута не найдено
 
-        if(defined("HLEB_FRAME_VERSION")) $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $this->create_debug_info($data);
+        if(defined("HLEB_FRAME_VERSION")) $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $data;
 
     }
 
@@ -242,16 +222,6 @@ class App
         return false;
     }
 
-    private function create_debug_info(array $param){
-        $result = [];
-        // Библиотеки могут выводить отладку в собственной манере
-        foreach($param as $key=>$value) {
-            $result[]= "<span style='color:yellowgreen'> " . $key . "</span>: <span style='color:whitesmoke'>" .
-                (is_string($value) ? htmlentities($value) : htmlentities(json_encode($value))) . "</span>";
-        }
-
-        return "[ " .implode(", ", $result) . " ]";
-    }
 }
 
 
