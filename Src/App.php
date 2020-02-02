@@ -30,8 +30,8 @@ class App
         if (empty($this->params)) return;
 
         // Нахождение подходящего роута
-        foreach ($this->params as $route_data) {
-            $this->searchActualRoute($route_data);
+        foreach ($this->params as $routeData) {
+            $this->searchActualRoute($routeData);
         }
     }
 
@@ -105,9 +105,9 @@ class App
 
     private function getBefore(array $param)
     {
-        $before_conrollers = $param["before"];
+        $beforeConrollers = $param["before"];
 
-        foreach($before_conrollers as $before) {
+        foreach($beforeConrollers as $before) {
 
             $call = explode("@", $before);
 
@@ -156,27 +156,38 @@ class App
 
             if (strpos(end($parts), "?") !== false && !(count($uri) === count($parts) -1 || count($uri) === count($parts))) return false;
 
-            foreach ($parts as $key => $part) {
+            $firstPart = $parts[0];
 
-                $pattern_name = trim($part, "{?}");
+            if(count($uri) == 1 && count($parts) == 1 && $uri[0] === "" && strpos($firstPart, "?") !== false) {
 
-                if (isset($uri[$key]) && $part{0} == "{" && $part{strlen($part) - 1} == "}") {
+                if($firstPart{0} == "{" && $firstPart{strlen($firstPart) - 1} == "}") {
+                    $this->data[trim($firstPart, "{?}")] = "";
+                }
 
-                    if(count($where) && array_key_exists($pattern_name,$where)){
+            } else {
 
-                        preg_match("/^" . $where[$pattern_name] . "$/", $uri[$key], $matches);
+                foreach ($parts as $key => $part) {
 
-                        if (empty($matches[0]) || $matches[0] != $uri[$key]) {
+                    $patternName = trim($part, "{?}");
 
-                            return false;
+                    if (isset($uri[$key]) && $part{0} == "{" && $part{strlen($part) - 1} == "}") {
+
+                        if (count($where) && array_key_exists($patternName, $where)) {
+
+                            preg_match("/^" . $where[$patternName] . "$/", $uri[$key], $matches);
+
+                            if (empty($matches[0]) || $matches[0] != $uri[$key]) {
+
+                                return false;
+                            }
                         }
+
+                        $this->data[$patternName] = $uri[$key];
+
+                    } else if (!(($key === count($parts) - 1 && !isset($uri[$key])) || $patternName === $uri[$key])) {
+
+                        return false;
                     }
-
-                    $this->data[$pattern_name] = $uri[$key];
-
-                } else if (!(($key === count($parts) - 1 && !isset($uri[$key])) || $pattern_name === $uri[$key])) {
-
-                    return false;
                 }
             }
 
