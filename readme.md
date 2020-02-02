@@ -1,4 +1,6 @@
  #### Radjax (fast Ajax- and API-router)
+ 
+ ### ![HLEB LOGO](https://raw.githubusercontent.com/phphleb/radjax/master/Src/logo.jpg)
 
 The Radjax is not included in the original configuration of the framework [HLEB](https://github.com/phphleb/hleb), so it must be copied to the folder with the vendor/phphleb  libraries from the [github.com/phphleb/radjax](https://github.com/phphleb/radjax)  repository or installed using Composer:
 
