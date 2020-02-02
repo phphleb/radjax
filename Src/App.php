@@ -31,15 +31,15 @@ class App
 
         // Нахождение подходящего роута
         foreach ($this->params as $route_data) {
-            $this->search_actual_route($route_data);
+            $this->searchActualRoute($route_data);
         }
     }
 
-    protected function search_actual_route(array $data)
+    protected function searchActualRoute(array $data)
     {
         $this->data = [];
 
-        if($data["route"] === $this->uri || $this->params_in_uri($data["route"], $data['where'])){
+        if($data["route"] === $this->uri || $this->paramsInUri($data["route"], $data['where'])){
 
             // Роут найден
 
@@ -70,7 +70,7 @@ class App
             }
 
             if(!isset($_SESSION)) session_start();
-            if($data["protected"] && !$this->is_protected()){
+            if($data["protected"] && !$this->isProtected()){
 
                 header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
                 die("Protected from CSRF");
@@ -78,33 +78,7 @@ class App
             }
             if(!$data["save_session"]) session_write_close();
 
-            if (defined("HLEB_PROJECT_LOG_ON") && HLEB_PROJECT_LOG_ON) {
-
-                ini_set('log_errors', 'On');
-
-                ini_set('error_log', HLEB_GLOBAL_DIRECTORY . '/storage/logs/' . date("Y_m_d_") . 'errors.log');
-            }
-
-            if(!defined('HLEB_GLOBAL_DIRECTORY')) define("HLEB_GLOBAL_DIRECTORY", dirname(__FILE__, 5));
-
-            if(!defined('HLEB_VENDOR_DIR_NAME')) define('HLEB_VENDOR_DIR_NAME', array_reverse(explode(DIRECTORY_SEPARATOR, dirname(__DIR__, 3)))[0]);
-
-            if(!defined('HLEB_VENDOR_DIRECTORY')) define('HLEB_VENDOR_DIRECTORY', HLEB_GLOBAL_DIRECTORY . DIRECTORY_SEPARATOR . HLEB_VENDOR_DIR_NAME);
-
-            if(!defined('HLEB_PROJECT_DIRECTORY')) define("HLEB_PROJECT_DIRECTORY", HLEB_VENDOR_DIRECTORY . "/phphleb/framework");
-
-            if ($data["autoloader"] && file_exists(HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php')) {
-                require_once (HLEB_VENDOR_DIRECTORY . "/" . 'autoload.php');
-            }
-
-            ////////////////////////////////////////////// HLEB /////////////////////////////////////////////////////////
-
             if(defined("HLEB_FRAME_VERSION")) {
-
-                 if (HLEB_PROJECT_CLASSES_AUTOLOAD && function_exists('radjax_main_autoloader')) {
-                    spl_autoload_register('radjax_main_autoloader', true, true);
-                 }
-
                 if($this->data) {
                     foreach ($this->data as $key => $value) {
                         \Hleb\Constructor\Handlers\Request::add($key, $value);
@@ -112,18 +86,15 @@ class App
                 }
             }
 
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            if(count($data["before"])) $this->getBefore($data);
 
-            if(count($data["before"])) $this->get_before($data);
-
-            $result = $this->get_controller($data);
+            $result = $this->getController($data);
 
             if(is_string($result) || is_numeric($result)) {
                 print $result;
             }
 
             exit();
-
         }
 
         // Подходящего роута не найдено
@@ -132,7 +103,7 @@ class App
 
     }
 
-    private function get_before(array $param)
+    private function getBefore(array $param)
     {
         $before_conrollers = $param["before"];
 
@@ -152,9 +123,8 @@ class App
 
     }
 
-    private function get_controller(array $param)
+    private function getController(array $param)
     {
-
         $call = explode("@", $param["controller"]);
 
         $initiator = trim($call[0], "\\");
@@ -162,18 +132,18 @@ class App
         $controller = new $initiator();
 
         $method = ($call[1] ?? "index") .
-            ( method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])) );
+            (method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])) );
 
         return $controller->{$method}(...$param["arguments"]);
 
     }
 
-    protected function is_protected()
+    protected function isProtected()
     {
         return ($_REQUEST['_token'] ?? "") === Route::key();
     }
 
-    protected function params_in_uri($route, $where)
+    protected function paramsInUri($route, $where)
     {
 
         if ((strpos($route, "}") !== false && strpos($route, "}") !== false ) || strpos($route, "?") !== false) {
@@ -211,9 +181,7 @@ class App
             }
 
             if(!defined("HLEB_FRAME_VERSION")) {
-                // Проверки прошли успешно
                 require "Request.php";
-
                 Request::addAll($this->data);
             }
 
