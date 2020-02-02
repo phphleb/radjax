@@ -42,7 +42,6 @@ class Route
          "protected" => false,
          "where" => ["number" => "[0-9]+"],
          "arguments" => ["value1", "value2"],
-         "autoloader" => false,
          "save_session" => false,
          "before" => "App\Middleware\Before\UserAuth@index",
          "add_headers" => true,
@@ -60,8 +59,6 @@ class Route
         $sort_params["where"] = $params["where"] ?? [];
 
         $sort_params["arguments"] = $params["arguments"] ?? [];
-
-        $sort_params["autoloader"] = $params["autoloader"] ?? true;
 
         $sort_params["save_session"] = $params["save_session"] ?? false;
 
