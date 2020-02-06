@@ -160,7 +160,7 @@ class App
 
             if(count($uri) == 1 && count($parts) == 1 && $uri[0] === "" && strpos($firstPart, "?") !== false) {
 
-                if($firstPart{0} == "{" && $firstPart{strlen($firstPart) - 1} == "}") {
+                if($firstPart[0] == "{" && $firstPart{strlen($firstPart) - 1} == "}") {
                     $this->data[trim($firstPart, "{?}")] = "";
                 }
 
@@ -170,7 +170,7 @@ class App
 
                     $patternName = trim($part, "{?}");
 
-                    if (isset($uri[$key]) && $part{0} == "{" && $part{strlen($part) - 1} == "}") {
+                    if (isset($uri[$key]) && $part[0] == "{" && $part{strlen($part) - 1} == "}") {
 
                         if (count($where) && array_key_exists($patternName, $where)) {
 
