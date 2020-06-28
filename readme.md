@@ -8,7 +8,7 @@ The Radjax is not included in the original configuration of the framework [HLEB]
 $ composer require phphleb/radjax
 ```
 
-Connection to the project in /routes/ajax.php or /routes/api.php
+Connection to the project in /routes/radjax.php (are priority)
 
 ```php
 
@@ -23,6 +23,7 @@ Radjax\Route::get("/weather/{y}/{m}/{d}/{h?}/", ["get","post"], "App\Controllers
 Connection separate from HLEB :
 
 ```php
+// require or through classes autoloader
 
 require '/vendor-directory/phphleb/radjax/Route.php';
 
