@@ -31,6 +31,8 @@ require '/vendor-directory/phphleb/radjax/Src/RCreator.php';
 
 require '/vendor-directory/phphleb/radjax/Src/App.php';
 
+// Initialization with the path to the route file
+
 (new Radjax\Src\App(['/path-to-directory/routes/radjax-route.php']))->get();
 
 ```
