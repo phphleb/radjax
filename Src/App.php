@@ -79,6 +79,9 @@ class App
             if(!$data["save_session"]) session_write_close();
 
             if(defined("HLEB_FRAME_VERSION")) {
+                if(file_exists(__DIR__ . '/../../../app/Optional/aliases.php')){
+                    require __DIR__ . '/../../../app/Optional/aliases.php';
+                }
                 if($this->data) {
                     foreach ($this->data as $key => $value) {
                         \Hleb\Constructor\Handlers\Request::add($key, $value);
