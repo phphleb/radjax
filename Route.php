@@ -17,20 +17,20 @@ class Route
 
     const STANDARD_TYPES = ["GET", "POST"];
 
-    private function __construct(){}
+    private function __construct() {
+    }
 
-    public function __clone(){}
+    public function __clone() {
+    }
 
-    static public function instance()
-    {
+    static public function instance() {
         if (self::$instance === null) {
             self::$instance = new static();
         }
         return self::$instance;
     }
 
-    public static function __callStatic($method, $args)
-    {
+    public static function __callStatic($method, $args) {
         return call_user_func_array(array(self::instance(), $method), $args);
     }
 
@@ -48,9 +48,8 @@ class Route
 
      ] */
 
-    public static function get(string $route, array $type , string $controller, array $params)
-    {
-        $type = count($type) ? array_map("strtoupper", $type) :  self::STANDARD_TYPES;
+    public static function get(string $route, array $type, string $controller, array $params) {
+        $type = count($type) ? array_map("strtoupper", $type) : self::STANDARD_TYPES;
 
         $sort_params = [];
 
@@ -62,22 +61,20 @@ class Route
 
         $sort_params["save_session"] = $params["save_session"] ?? false;
 
-        $sort_params["before"] = isset($params["before"]) ? ( is_array($params["before"])  ? $params["before"] : [$params["before"]]) : [] ;
+        $sort_params["before"] = isset($params["before"]) ? (is_array($params["before"]) ? $params["before"] : [$params["before"]]) : [];
 
         $sort_params["add_headers"] = $params["add_headers"] ?? true;
 
         $route = trim($route, "/");
 
-        self::$params[] = array_merge (["route"=>$route, "type"=>$type, "controller"=>$controller], $sort_params);
+        self::$params[] = array_merge(["route" => $route, "type" => $type, "controller" => $controller], $sort_params);
     }
 
-    public static function getParams() : array
-    {
+    public static function getParams(): array {
         return self::$params;
     }
 
-    public static function key()
-    {
+    public static function key() {
         return md5(session_id() . ($_SESSION['_SECURITY_TOKEN'] ?? 0));
     }
 

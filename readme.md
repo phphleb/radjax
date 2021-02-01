@@ -31,8 +31,8 @@ require '/vendor-directory/phphleb/radjax/Src/RCreator.php';
 
 require '/vendor-directory/phphleb/radjax/Src/App.php';
 
-// Initialization with the path to the route file
-
-(new Radjax\Src\App(['/path-to-directory/routes/radjax-route.php']))->get();
+// Initialization with the path to the route file.
+// If the route was found, boolean `true` will be returned, else `false`.
+$isActive = (new Radjax\Src\App(['/path-to-directory/routes/radjax-route.php']))->get();
 
 ```

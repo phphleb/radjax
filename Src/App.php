@@ -14,40 +14,42 @@ class App
 
     protected $data = [];
 
-    function __construct(array $routes_files_path)
-    {
-        foreach($routes_files_path as $route){
+    function __construct(array $routes_files_path) {
+        foreach ($routes_files_path as $route) {
             (new RCreator($route))->view();
         }
 
         $this->params = Route::getParams();
 
-        $this->uri = trim(explode("?", $_SERVER['REQUEST_URI'])[0] , "/");
+        $this->uri = trim(explode("?", $_SERVER['REQUEST_URI'])[0], "/");
     }
 
-    function get()
-    {
-        if (empty($this->params)) return;
+    /**
+     * Возвращает факт обработки роута или отсутствие совпадения.
+     * @return bool
+     */
+    function get() {
+        if (empty($this->params)) return false;
 
         // Нахождение подходящего роута
         foreach ($this->params as $routeData) {
-            if($this->searchActualRoute($routeData)) {
-                break;
+            if ($this->searchActualRoute($routeData)) {
+                return true;
             }
         }
+        return false;
     }
 
-    protected function searchActualRoute(array $data)
-    {
+    protected function searchActualRoute(array $data) {
         $this->data = [];
 
-        if($data["route"] === $this->uri || $this->paramsInUri($data["route"], $data['where'])){
+        if ($data["route"] === $this->uri || $this->paramsInUri($data["route"], $data['where'])) {
 
             // Роут найден
 
             $data["type"][] = "OPTIONS";
 
-            if($data["add_headers"]) {
+            if ($data["add_headers"]) {
 
                 if (strtoupper($_SERVER['REQUEST_METHOD']) == "OPTIONS") {
 
@@ -71,35 +73,35 @@ class App
                 }
             }
 
-            if(!isset($_SESSION)) session_start();
-            if($data["protected"] && !$this->isProtected()){
+            if (!isset($_SESSION)) session_start();
+            if ($data["protected"] && !$this->isProtected()) {
 
                 header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
                 die("Protected from CSRF");
 
             }
-            if(!$data["save_session"]) session_write_close();
+            if (!$data["save_session"]) session_write_close();
 
-            if(defined("HLEB_FRAME_VERSION")) {
-                if(file_exists(dirname(__DIR__, 4) . '/app/Optional/aliases.php')){
+            if (defined("HLEB_FRAME_VERSION")) {
+                if (file_exists(dirname(__DIR__, 4) . '/app/Optional/aliases.php')) {
                     require dirname(__DIR__, 4) . '/app/Optional/aliases.php';
                 }
-                if($this->data) {
+                if ($this->data) {
                     foreach ($this->data as $key => $value) {
                         \Hleb\Constructor\Handlers\Request::add($key, $value);
                     }
                 }
             }
 
-            if(count($data["before"])) $this->getBefore($data);
+            if (count($data["before"])) $this->getBefore($data);
 
             $result = $this->getController($data);
 
-            if(is_string($result) || is_numeric($result)) {
+            if (is_string($result) || is_numeric($result)) {
                 print $result;
             }
 
-            if(defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION > '1.5.53') {
+            if (defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION > '1.5.53') {
                 exit();
             } else {
                 return true;
@@ -108,15 +110,16 @@ class App
 
         // Подходящего роута не найдено
 
-        if(defined("HLEB_FRAME_VERSION")) $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $data;
+        if (defined("HLEB_FRAME_VERSION")) $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $data;
+
+        return false;
 
     }
 
-    private function getBefore(array $param)
-    {
+    private function getBefore(array $param) {
         $beforeConrollers = $param["before"];
 
-        foreach($beforeConrollers as $before) {
+        foreach ($beforeConrollers as $before) {
 
             $call = explode("@", $before);
 
@@ -132,8 +135,7 @@ class App
 
     }
 
-    private function getController(array $param)
-    {
+    private function getController(array $param) {
         $call = explode("@", $param["controller"]);
 
         $initiator = trim($call[0], "\\");
@@ -141,21 +143,19 @@ class App
         $controller = new $initiator();
 
         $method = ($call[1] ?? "index") .
-            (method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])) );
+            (method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])));
 
         return $controller->{$method}(...$param["arguments"]);
 
     }
 
-    protected function isProtected()
-    {
+    protected function isProtected() {
         return ($_REQUEST['_token'] ?? "") === Route::key();
     }
 
-    protected function paramsInUri($route, $where)
-    {
+    protected function paramsInUri($route, $where) {
 
-        if ((strpos($route, "}") !== false && strpos($route, "}") !== false ) || strpos($route, "?") !== false) {
+        if ((strpos($route, "}") !== false && strpos($route, "}") !== false) || strpos($route, "?") !== false) {
 
             $parts = explode("/", trim($route, "/"));
 
@@ -163,13 +163,13 @@ class App
 
             if (strpos(end($parts), "?") === false && count($uri) !== count($parts)) return false;
 
-            if (strpos(end($parts), "?") !== false && !(count($uri) === count($parts) -1 || count($uri) === count($parts))) return false;
+            if (strpos(end($parts), "?") !== false && !(count($uri) === count($parts) - 1 || count($uri) === count($parts))) return false;
 
             $firstPart = $parts[0];
 
-            if(count($uri) == 1 && count($parts) == 1 && $uri[0] === "" && strpos($firstPart, "?") !== false) {
+            if (count($uri) == 1 && count($parts) == 1 && $uri[0] === "" && strpos($firstPart, "?") !== false) {
 
-                if($firstPart[0] == "{" && $firstPart[strlen($firstPart) - 1] == "}") {
+                if ($firstPart[0] == "{" && $firstPart[strlen($firstPart) - 1] == "}") {
                     $this->data[trim($firstPart, "{?}")] = "";
                 }
 
@@ -200,7 +200,7 @@ class App
                 }
             }
 
-            if(!defined("HLEB_FRAME_VERSION")) {
+            if (!defined("HLEB_FRAME_VERSION")) {
                 require "Request.php";
                 Request::addAll($this->data);
             }
