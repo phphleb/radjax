@@ -31,7 +31,9 @@ class App
 
         // Нахождение подходящего роута
         foreach ($this->params as $routeData) {
-            $this->searchActualRoute($routeData);
+            if($this->searchActualRoute($routeData)) {
+                break;
+            }
         }
     }
 
@@ -97,7 +99,11 @@ class App
                 print $result;
             }
 
-            exit();
+            if(defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION > '1.5.53') {
+                exit();
+            } else {
+                return true;
+            }
         }
 
         // Подходящего роута не найдено
