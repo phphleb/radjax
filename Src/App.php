@@ -83,8 +83,8 @@ class App
             if (!$data["save_session"]) session_write_close();
 
             if (defined("HLEB_FRAME_VERSION")) {
-                if (file_exists(dirname(__DIR__, 4) . '/app/Optional/aliases.php')) {
-                    require dirname(__DIR__, 4) . '/app/Optional/aliases.php';
+                if (file_exists(HLEB_GLOBAL_DIRECTORY . '/app/Optional/aliases.php')) {
+                    require HLEB_GLOBAL_DIRECTORY . '/app/Optional/aliases.php';
                 }
                 if ($this->data) {
                     foreach ($this->data as $key => $value) {
