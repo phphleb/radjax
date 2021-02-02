@@ -101,7 +101,7 @@ class App
                 print $result;
             }
 
-            if (defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION > '1.5.53') {
+            if (defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION < '1.5.53') {
                 exit();
             } else {
                 return true;
