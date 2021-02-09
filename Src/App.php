@@ -73,14 +73,18 @@ class App
                 }
             }
 
-            if (!isset($_SESSION)) session_start();
+            if (!isset($_SESSION)) {
+                session_start();
+            }
             if ($data["protected"] && !$this->isProtected()) {
 
                 header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
                 die("Protected from CSRF");
 
             }
-            if (!$data["save_session"]) session_write_close();
+            if (!$data["save_session"]) {
+                session_write_close();
+            }
 
             if (defined("HLEB_FRAME_VERSION")) {
                 if (file_exists(HLEB_GLOBAL_DIRECTORY . '/app/Optional/aliases.php')) {
@@ -91,9 +95,12 @@ class App
                         \Hleb\Constructor\Handlers\Request::add($key, $value);
                     }
                 }
+                \Hleb\Constructor\Handlers\Request::close();
             }
 
-            if (count($data["before"])) $this->getBefore($data);
+            if (count($data["before"])) {
+                $this->getBefore($data);
+            }
 
             $result = $this->getController($data);
 
@@ -110,7 +117,9 @@ class App
 
         // Подходящего роута не найдено
 
-        if (defined("HLEB_FRAME_VERSION")) $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $data;
+        if (defined("HLEB_FRAME_VERSION")) {
+            $GLOBALS["HLEB_MAIN_DEBUG_RADJAX"]["/" . $data["route"] . "/"] = $data;
+        }
 
         return false;
 
