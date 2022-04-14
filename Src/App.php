@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Radjax\Src;
 
 use Radjax\Route;
-use Request;
 
 class App
 {
