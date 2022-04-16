@@ -9,9 +9,11 @@ class App
 {
     protected $params;
 
-    protected $uri;
+    protected $uri = '';
 
     protected $data = [];
+
+    protected $route = null;
 
     function __construct(array $routes_files_path) {
         foreach ($routes_files_path as $route) {
@@ -52,6 +54,14 @@ class App
             }
         }
         return false;
+    }
+
+    /**
+     * Возвращает найденный шаблон маршрута.
+     * @return null|string
+     */
+    public function getRoute() {
+        return $this->route;
     }
 
     protected function searchType(array $type) {
@@ -233,6 +243,7 @@ class App
                     }
                 }
             }
+            $this->route = trim($route, " /\\");
 
             return true;
         }
