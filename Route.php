@@ -9,8 +9,6 @@ namespace Radjax;
 
 class Route
 {
-    private static $instance;
-
     public static $params = [];
 
     const ALL_TYPES = ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS", "CONNECT", "TRACE"];
@@ -21,17 +19,6 @@ class Route
     }
 
     public function __clone() {
-    }
-
-    static public function instance() {
-        if (self::$instance === null) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
-    public static function __callStatic($method, $args) {
-        return call_user_func_array(array(self::instance(), $method), $args);
     }
 
     /*
