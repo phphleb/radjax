@@ -19,17 +19,15 @@ class App
         }
 
         $this->params = Route::getParams();
-
-        $this->uri = trim(explode("?", $_SERVER['REQUEST_URI'])[0], "/");
     }
 
     /**
      * Возвращает факт обработки роута или отсутствие совпадения.
      * @return bool
      */
-    function get() {
+    public function get() {
         if (empty($this->params)) return false;
-
+        $this->uri = trim(explode("?", $_SERVER['REQUEST_URI'])[0], "/");
         // Нахождение подходящего роута
         foreach ($this->params as $routeData) {
             if ($this->searchActualRoute($routeData)) {
@@ -37,6 +35,27 @@ class App
             }
         }
         return false;
+    }
+
+    /**
+     * Возвращает только результат нахождения определенного URL как подходящего под один из маршрутов.
+     * @param string $uri
+     * @return bool
+     */
+    public function searchRoute(string $uri) {
+        $this->uri = $uri;
+        foreach ($this->params as $data) {
+            $this->data = [];
+            if ($data["route"] === $this->uri || $this->paramsInUri($data["route"], $data['where'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function searchType(array $type) {
+        return in_array(strtoupper($_SERVER['REQUEST_METHOD']),  $type) && in_array(strtoupper($_SERVER['REQUEST_METHOD']), Route::ALL_TYPES);
+
     }
 
     protected function searchActualRoute(array $data) {
@@ -60,8 +79,7 @@ class App
                     exit();
                 }
 
-                if (!in_array(strtoupper($_SERVER['REQUEST_METHOD']), $data["type"]) ||
-                    !in_array(strtoupper($_SERVER['REQUEST_METHOD']), Route::ALL_TYPES)) {
+                if (!$this->searchType($data["type"])) {
 
                     if (!headers_sent()) {
                         header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
@@ -70,6 +88,8 @@ class App
                     }
                     exit();
                 }
+            } else if (!$this->searchType($data["type"])) {
+                exit();
             }
 
             if (!isset($_SESSION)) {
@@ -94,6 +114,9 @@ class App
                         \Hleb\Constructor\Handlers\Request::add($key, $value);
                     }
                 }
+            } else {
+                require __DIR__ . "/Request.php";
+                Request::addAll($this->data);
             }
 
             if (count($data["before"])) {
@@ -208,11 +231,6 @@ class App
                         return false;
                     }
                 }
-            }
-
-            if (!defined("HLEB_FRAME_VERSION")) {
-                require "Request.php";
-                Request::addAll($this->data);
             }
 
             return true;
