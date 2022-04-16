@@ -43,7 +43,8 @@ class App
      * @return bool
      */
     public function searchRoute(string $uri) {
-        $this->uri = $uri;
+        if (empty($this->params)) return false;
+        $this->uri = trim(explode("?", $uri)[0], "/");
         foreach ($this->params as $data) {
             $this->data = [];
             if ($data["route"] === $this->uri || $this->paramsInUri($data["route"], $data['where'])) {
