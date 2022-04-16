@@ -15,6 +15,8 @@ class App
 
     protected $route = null;
 
+    protected $number = null;
+
     function __construct(array $routes_files_path) {
         foreach ($routes_files_path as $route) {
             (new RCreator($route))->view();
@@ -28,10 +30,12 @@ class App
      * @return bool
      */
     public function get() {
+        $this->number = 0;
         if (empty($this->params)) return false;
         $this->uri = trim(explode("?", $_SERVER['REQUEST_URI'])[0], "/");
         // Нахождение подходящего роута
         foreach ($this->params as $routeData) {
+            $this->number++;
             if ($this->searchActualRoute($routeData)) {
                 return true;
             }
@@ -45,9 +49,11 @@ class App
      * @return bool
      */
     public function searchRoute(string $uri) {
+        $this->number = 0;
         if (empty($this->params)) return false;
         $this->uri = trim(explode("?", $uri)[0], "/");
         foreach ($this->params as $data) {
+            $this->number++;
             $this->data = [];
             if ($data["route"] === $this->uri || $this->paramsInUri($data["route"], $data['where'])) {
                 return true;
@@ -62,6 +68,14 @@ class App
      */
     public function getRoute() {
         return $this->route;
+    }
+
+    /**
+     * Возвращает позицию текущего роута.
+     * @return int|null
+     */
+    public function getNumber() {
+        return $this->number;
     }
 
     protected function searchType(array $type) {
