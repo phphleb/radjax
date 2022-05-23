@@ -154,6 +154,17 @@ class App
             if (is_string($result) || is_numeric($result)) {
                 print $result;
             }
+            if (is_array($result)) {
+                if (defined('HLEB_TAG_INTERNAL') && !isset($result[HLEB_TAG_INTERNAL])) {
+                    headers_sent() or header("Content-Type: application/json");
+                    $json = json_encode($result);
+                    if ($json === false) {
+                        http_response_code(500);
+                        $json = '{"error": "json_encode"}';
+                    }
+                    exit($json);
+                }
+            }
 
             if (defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION < '1.5.53') {
                 exit();
