@@ -150,20 +150,14 @@ class App
                }
             }
             $result = $this->getController($data);
-
+            if ($result === false) {
+                exit();
+            }
             if (is_string($result) || is_numeric($result)) {
                 print $result;
             }
             if (is_array($result)) {
-                if (defined('HLEB_TAG_INTERNAL') && !isset($result[HLEB_TAG_INTERNAL])) {
-                    headers_sent() or header("Content-Type: application/json");
-                    $json = json_encode($result);
-                    if ($json === false) {
-                        http_response_code(500);
-                        $json = '{"error": "json_encode"}';
-                    }
-                    exit($json);
-                }
+                $this->addJsonData($result);
             }
 
             if (defined('HLEB_PROJECT_FULL_VERSION') && HLEB_PROJECT_FULL_VERSION < '1.5.53') {
@@ -197,9 +191,12 @@ class App
             $method = ($call[1] ?? "index") .
                 (method_exists($controller, ($call[1] ?? "index")) ? "" : "Http" . ucfirst(strtolower($_SERVER['REQUEST_METHOD'])));
 
-           if ($controller->{$method}() === false) {
+           if ($beforeData = ($controller->{$method}() === false)) {
                return false;
            }
+            if (is_array($beforeData)) {
+                $this->addJsonData($beforeData);
+            }
         }
          return true;
     }
@@ -273,6 +270,18 @@ class App
             return true;
         }
         return false;
+    }
+
+    private function addJsonData(array $params) {
+        if (!defined('HLEB_TAG_INTERNAL') || !isset($result[HLEB_TAG_INTERNAL])) {
+            headers_sent() or header("Content-Type: application/json");
+            $json = json_encode($params);
+            if ($json === false) {
+                http_response_code(500);
+                $json = '{"error": "json_encode"}';
+            }
+            exit($json);
+        }
     }
 
 }
